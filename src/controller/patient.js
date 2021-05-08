@@ -1,6 +1,6 @@
 const helper = require('../helper')
 const qs = require('querystring')
-const { postPatient, countPatient, getAllPatient } = require('../model/patient')
+const { postPatient, countPatient, getAllPatient, getPatientById, patchPatient } = require('../model/patient')
 
 const getPrevLink = (page, currentQuery) => {
   if (page > 1) {
@@ -68,9 +68,36 @@ module.exports = {
     try {
       const result = await getAllPatient(limit, offset)
       if (result.length > 0) {
-        return helper.response(response, 200, 'Get all patient data success', result, pageInfo)
+        return helper.response(response, 200, "Get all patient's data success", result, pageInfo)
       } else {
-        return helper.response(response, 200, 'Get all patient data success', [], pageInfo)
+        return helper.response(response, 200, "Get all patient's data success", [], pageInfo)
+      }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  patchPatient: async (request, response) => {
+    try {
+      const { id } = request.params
+      const setData = {
+        name: request.body.name,
+        sex: request.body.sex,
+        religion: request.body.religion,
+        phone: request.body.phone,
+        address: request.body.address,
+        nik: request.body.nik
+      }
+      Object.keys(setData).map((key, index) => {
+        if (setData[key] === '') {
+          return helper.response(response, 400, 'Please fill in all the required fields')
+        }
+      })
+      const checkId = await getPatientById(id)
+      if (checkId.length > 0) {
+        const result = await patchPatient(setData, id)
+        return helper.response(response, 200, "Patient's data updated", result)
+      } else {
+        return helper.response(response, 400, `Patient's data with id : ${id} not found`)
       }
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
