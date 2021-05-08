@@ -76,6 +76,19 @@ module.exports = {
       return helper.response(response, 400, 'Bad Request', error)
     }
   },
+  getPatientById: async (request, response) => {
+    try {
+      const { id } = request.params
+      const result = await getPatientById(id)
+      if (result.length > 0) {
+        return helper.response(response, 200, `Get patient's data with id : ${id} success`, result)
+      } else {
+        return helper.response(response, 400, `Patient's data with id : ${id} not found`)
+      }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
   patchPatient: async (request, response) => {
     try {
       const { id } = request.params
