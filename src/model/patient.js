@@ -51,5 +51,12 @@ module.exports = {
         }
       })
     })
+  },
+  deletePatient: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query('DELETE FROM patient WHERE id = ?', id, (error, result) => {
+        !error ? resolve(result) : reject(new Error(error))
+      })
+    })
   }
 }

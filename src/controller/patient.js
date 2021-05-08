@@ -1,6 +1,6 @@
 const helper = require('../helper')
 const qs = require('querystring')
-const { postPatient, countPatient, getAllPatient, getPatientById, patchPatient } = require('../model/patient')
+const { postPatient, countPatient, getAllPatient, getPatientById, patchPatient, deletePatient } = require('../model/patient')
 
 const getPrevLink = (page, currentQuery) => {
   if (page > 1) {
@@ -96,6 +96,20 @@ module.exports = {
       if (checkId.length > 0) {
         const result = await patchPatient(setData, id)
         return helper.response(response, 200, "Patient's data updated", result)
+      } else {
+        return helper.response(response, 400, `Patient's data with id : ${id} not found`)
+      }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  deletePatient: async (request, response) => {
+    try {
+      const { id } = request.params
+      const checkId = await getPatientById(id)
+      if (checkId.length > 0) {
+        await deletePatient(id)
+        return helper.response(response, 200, `Patient's data with id : ${id} has been successfully deleted`)
       } else {
         return helper.response(response, 400, `Patient's data with id : ${id} not found`)
       }
